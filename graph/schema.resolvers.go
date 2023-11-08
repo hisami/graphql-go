@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"graphql-go/graph/model"
 )
 
@@ -19,6 +20,11 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 			Name: "name",
 		},
 	}, nil
+}
+
+// PostMessage is the resolver for the postMessage field.
+func (r *mutationResolver) PostMessage(ctx context.Context, user string, text *string) (*model.Message, error) {
+	panic(fmt.Errorf("not implemented: PostMessage - postMessage"))
 }
 
 // Todos is the resolver for the todos field.
@@ -45,11 +51,25 @@ func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	}, nil
 }
 
+// Messages is the resolver for the messages field.
+func (r *queryResolver) Messages(ctx context.Context) ([]*model.Message, error) {
+	panic(fmt.Errorf("not implemented: Messages - messages"))
+}
+
+// MessagePosted is the resolver for the messagePosted field.
+func (r *subscriptionResolver) MessagePosted(ctx context.Context, user string) (<-chan *model.Message, error) {
+	panic(fmt.Errorf("not implemented: MessagePosted - messagePosted"))
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// Subscription returns SubscriptionResolver implementation.
+func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type subscriptionResolver struct{ *Resolver }
