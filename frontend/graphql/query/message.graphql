@@ -1,0 +1,15 @@
+query {
+  messages {
+    id
+    text
+  }
+}
+
+mutation ($user: String!, $text: String!) {
+  postMessage(user: $user, text: $text) {
+    id
+    user
+    text
+    createdAt
+  }
+}
