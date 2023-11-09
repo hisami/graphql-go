@@ -26,26 +26,6 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	}, nil
 }
 
-// PostMessage is the resolver for the postMessage field.
-func (r *mutationResolver) PostMessage(ctx context.Context, user string, text string) (*model.Message, error) {
-	message := &model.Message{
-		ID:        ksuid.New().String(),
-		CreatedAt: time.Now().UTC(),
-		User:      user,
-		Text:      text,
-	}
-
-	// 投稿されたメッセージを保存し、subscribeしている全てのコネクションにブロードキャスト
-	r.mutex.Lock()
-	r.messages = append(r.messages, message)
-	for _, ch := range r.subscribers {
-		ch <- message
-	}
-	r.mutex.Unlock()
-
-	return message, nil
-}
-
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	return []*model.Todo{
@@ -73,6 +53,26 @@ func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 // Messages is the resolver for the messages field.
 func (r *queryResolver) Messages(ctx context.Context) ([]*model.Message, error) {
 	return r.messages, nil
+}
+
+// PostMessage is the resolver for the postMessage field.
+func (r *mutationResolver) PostMessage(ctx context.Context, user string, text string) (*model.Message, error) {
+	message := &model.Message{
+		ID:        ksuid.New().String(),
+		CreatedAt: time.Now().UTC(),
+		User:      user,
+		Text:      text,
+	}
+
+	// 投稿されたメッセージを保存し、subscribeしている全てのコネクションにブロードキャスト
+	r.mutex.Lock()
+	r.messages = append(r.messages, message)
+	for _, ch := range r.subscribers {
+		ch <- message
+	}
+	r.mutex.Unlock()
+
+	return message, nil
 }
 
 // MessagePosted is the resolver for the messagePosted field.
