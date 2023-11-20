@@ -78,20 +78,40 @@ export type User = {
   name: Scalars['String']['output'];
 };
 
-export type Unnamed_1_QueryVariables = Exact<{ [key: string]: never; }>;
+export type GetMessagesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Unnamed_1_Query = { __typename?: 'Query', messages: Array<{ __typename?: 'Message', id: string, text: string }> };
+export type GetMessagesQuery = { __typename?: 'Query', messages: Array<{ __typename?: 'Message', id: string, user: string, text: string, createdAt: any }> };
 
-export type Unnamed_2_MutationVariables = Exact<{
+export type PostMessageMutationVariables = Exact<{
   user: Scalars['String']['input'];
   text: Scalars['String']['input'];
 }>;
 
 
-export type Unnamed_2_Mutation = { __typename?: 'Mutation', postMessage?: { __typename?: 'Message', id: string, user: string, text: string, createdAt: any } | null };
+export type PostMessageMutation = { __typename?: 'Mutation', postMessage?: { __typename?: 'Message', id: string, user: string, text: string, createdAt: any } | null };
 
 
+export const GetMessagesDocument = gql`
+    query getMessages {
+  messages {
+    id
+    user
+    text
+    createdAt
+  }
+}
+    `;
+export const PostMessageDocument = gql`
+    mutation postMessage($user: String!, $text: String!) {
+  postMessage(user: $user, text: $text) {
+    id
+    user
+    text
+    createdAt
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
 
@@ -100,7 +120,12 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-
+    getMessages(variables?: GetMessagesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetMessagesQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetMessagesQuery>(GetMessagesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getMessages', 'query');
+    },
+    postMessage(variables: PostMessageMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PostMessageMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PostMessageMutation>(PostMessageDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'postMessage', 'mutation');
+    }
   };
 }
 export type Sdk = ReturnType<typeof getSdk>;
