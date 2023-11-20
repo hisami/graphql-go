@@ -1,11 +1,7 @@
 import { getClient } from "@/lib/apolloClient";
-import {
-  GetMessagesQuery,
-  GetMessagesDocument,
-  PostMessageDocument,
-} from "@/graphql/dist/client";
+import { GetMessagesQuery, GetMessagesDocument } from "@/graphql/dist/client";
 
-export default async function Home() {
+export default async function QueryPage() {
   // クエリ
   const { data: queryData } = await getClient().query<GetMessagesQuery>({
     query: GetMessagesDocument,
@@ -15,15 +11,6 @@ export default async function Home() {
     //   },
     // },
   });
-
-  // ミューテーション
-  // const { data: mutationData } = await getClient().mutate({
-  //   mutation: PostMessageDocument,
-  //   variables: { user: "hisamitsu", text: "text6" },
-  // });
-  // console.log("ミューテーション");
-  // console.log(mutationData);
-  // console.log("----------");
 
   const messages = [...queryData.messages];
   return (
